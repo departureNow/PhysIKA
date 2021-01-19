@@ -5,10 +5,11 @@ namespace PhysIKA {
 		public:
 			Sort();
 			~Sort();
-			int * radixSort(int *arr, int length);
+			Sort(int length);
+			void radixSort(int *arr, int length);
 
 		private:
-			Sort(int length);
+
 			void numMalloc(int *arr,int length);
 			int sortLength;
 			int * num;
