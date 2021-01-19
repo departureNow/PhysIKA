@@ -14,13 +14,13 @@ namespace PhysIKA {
 	}
 
 	Sort::Sort(int length) {
-
+		sortLength = length;
 	}
 
 	Sort::~Sort() {
 		cudaFree(num);
 	}
-	int * Sort::radixSort(int * arr, int length) {
+	void Sort::radixSort(int * arr, int length) {
 		numMalloc(arr, length);
 		int maxNum = INT_MIN;
 		for (int i = 0; i < length; i++) {
@@ -31,7 +31,6 @@ namespace PhysIKA {
 		int bitLength = int2bit(maxNum);
 		deviceRadixSort << <1, bitLength>> > (arr, length);
 		cudaMemcpy((void*)arr, (void*)num, length * sizeof(int), cudaMemcpyDeviceToHost);
-		return arr;
 	}
 
 	int Sort::int2bit(int n) {
