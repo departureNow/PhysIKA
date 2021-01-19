@@ -20,28 +20,6 @@ namespace PhysIKA {
 	Sort::~Sort() {
 		cudaFree(num);
 	}
-	void Sort::radixSort(int * arr, int length) {
-		numMalloc(arr, length);
-		int maxNum = INT_MIN;
-		for (int i = 0; i < length; i++) {
-			if (arr[i] > maxNum) {
-				maxNum = arr[i];
-			}
-		}
-		int bitLength = int2bit(maxNum);
-		deviceRadixSort << <1, bitLength>> > (arr, length);
-		cudaMemcpy((void*)arr, (void*)num, length * sizeof(int), cudaMemcpyDeviceToHost);
-	}
-
-	int Sort::int2bit(int n) {
-		int count = 0;
-		while (n != 0) {
-			n = n / 2;
-			count++;
-		}
-		return count;
-	}
-
 	__device__ int getBinaryByN(int num, int id) {
 		int count = 0;
 		int temp;
@@ -67,7 +45,8 @@ namespace PhysIKA {
 			if (x == 0) {
 				a0[k0] = arr[i];
 				k0++;
-			}else if (x == 1) {
+			}
+			else if (x == 1) {
 				a1[k1] = arr[i];
 				k1++;
 			}
@@ -82,6 +61,32 @@ namespace PhysIKA {
 		}
 		__syncthreads();
 	}
+
+	void Sort::radixSort(int * arr, int length) {
+		numMalloc(arr, length);
+		int maxNum = INT_MIN;
+		for (int i = 0; i < length; i++) {
+			if (arr[i] > maxNum) {
+				maxNum = arr[i];
+			}
+		}
+		int bitLength = int2bit(maxNum);
+		deviceRadixSort << <1, bitLength>> > (arr, length);
+		cudaMemcpy((void*)arr, (void*)num, length * sizeof(int), cudaMemcpyDeviceToHost);
+	}
+
+	int Sort::int2bit(int n) {
+		int count = 0;
+		while (n != 0) {
+			n = n / 2;
+			count++;
+		}
+		return count;
+	}
+
+
+
+
 
 
 	void Sort::numMalloc(int *arr, int length) {
